@@ -15,9 +15,10 @@ defmodule Rando.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Rando.PubSub},
       # Start the Endpoint (http/https)
-      RandoWeb.Endpoint
+      RandoWeb.Endpoint,
       # Start a worker by calling: Rando.Worker.start_link(arg)
       # {Rando.Worker, arg}
+      {Rando.UserGenServer, {:rand.uniform(100), nil}}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

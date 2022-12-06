@@ -5,8 +5,10 @@ defmodule RandoWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", RandoWeb do
+  scope "/", RandoWeb do
     pipe_through :api
+
+    get "/", UserController, :index
   end
 
   # Enables LiveDashboard only for development
