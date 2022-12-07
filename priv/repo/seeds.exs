@@ -1,20 +1,48 @@
-# Postgresql protocol has a limit of maximum parameters (65535)
+ # Postgresql protocol has a limit of maximum parameters (65535)
 # Choose the right batch size based on the number of parameters we can
 # insert at a time.
 # In this case, each of rows we are inserting 3 parameters so the maximum
 # batch size should be 65535/2 ~= 32766
-
-batch_size = 32766
+require Logger
+batch_size = 5_000
 
 placeholders = %{timestamp: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)}
 
+Logger.debug("Started seeding the users table")
+start_time = NaiveDateTime.utc_now()
+
 Enum.to_list(0..999_999)
-|> Enum.map(fn _ ->
+|> Stream.map(fn _ ->
   %{inserted_at: {:placeholder, :timestamp}, updated_at: {:placeholder, :timestamp}}
 end)
-|> Enum.chunk_every(batch_size)
-|> Enum.each(fn users ->
+|> Stream.chunk_every(batch_size)
+|> Task.async_stream(fn users ->
   Rando.Repo.insert_all("users", users, placeholders: placeholders)
-end)
+end, max_concurrency: 10, ordered: false)
+|> Enum.to_list()
 
-# Runs in ~5s
+end_time = NaiveDateTime.utc_now()
+diff = Time.diff(end_time, start_time, :microsecond)
+Logger.debug("Completed seeding the users table in #{diff} microseconds #{(diff/1_000_000)} seconds")
+
+# Runs in <2s
+
+# below are estimate time completions of the seeding, they only serve as a benchmark to guide
+# the reasoning behind the batch_size as I was unable to fully figure out why the speeds
+# were better for a smaller batch sizes. So through trial and error I arrived on 5000, below
+# is my empirical summary.
+#
+# batch_size = 10,000
+# [debug] Completed seeding the users table in 3513949 microseconds 3.513949 seconds
+
+# batch_size =  3500
+# [debug] Completed seeding the users table in 1898847 microseconds 1.898847 seconds
+
+# batch_size = 5000
+# [debug] Completed seeding the users table in 1704929 microseconds 1.704929 seconds
+
+# batch_size = 6000
+# [debug] Completed seeding the users table in 2020233 microseconds 2.020233 seconds
+
+# batch_size = 30000
+# [debug] Completed seeding the users table in 3415448 microseconds 3.415448 seconds

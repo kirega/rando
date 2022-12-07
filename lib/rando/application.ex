@@ -18,6 +18,7 @@ defmodule Rando.Application do
       RandoWeb.Endpoint,
       # Start a worker by calling: Rando.Worker.start_link(arg)
       # {Rando.Worker, arg}
+      {Task.Supervisor, name: Rando.TaskSupervisor},
       {Rando.UserGenServer, {:rand.uniform(100), nil}}
     ]
 
