@@ -1,4 +1,4 @@
- # Postgresql protocol has a limit of maximum parameters (65535)
+# Postgresql protocol has a limit of maximum parameters (65535)
 # Choose the right batch size based on the number of parameters we can
 # insert at a time.
 # In this case, each of rows we are inserting 3 parameters so the maximum
@@ -16,14 +16,21 @@ Enum.to_list(0..999_999)
   %{inserted_at: {:placeholder, :timestamp}, updated_at: {:placeholder, :timestamp}}
 end)
 |> Stream.chunk_every(batch_size)
-|> Task.async_stream(fn users ->
-  Rando.Repo.insert_all("users", users, placeholders: placeholders)
-end, max_concurrency: 10, ordered: false)
+|> Task.async_stream(
+  fn users ->
+    Rando.Repo.insert_all("users", users, placeholders: placeholders)
+  end,
+  max_concurrency: 10,
+  ordered: false
+)
 |> Enum.to_list()
 
 end_time = NaiveDateTime.utc_now()
 diff = Time.diff(end_time, start_time, :microsecond)
-Logger.debug("Completed seeding the users table in #{diff} microseconds #{(diff/1_000_000)} seconds")
+
+Logger.debug(
+  "Completed seeding the users table in #{diff} microseconds #{diff / 1_000_000} seconds"
+)
 
 # Runs in <2s
 
