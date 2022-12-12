@@ -37,7 +37,7 @@ defmodule Rando.UserGenServer do
 
   @impl true
   def handle_cast(:update_users, state) do
-    Task.Supervisor.async(Rando.TaskSupervisor, fn ->
+    %Task{} = Task.Supervisor.async(Rando.TaskSupervisor, fn ->
       case Users.update_all_user_points() do
         {:ok, _} -> :completed_user_update
         {:error, _} -> :failed_user_update

@@ -9,10 +9,10 @@ defmodule Rando.Users do
   require Logger
 
   @chunk 5_000
-
+  @type user_t :: %User{}
   @doc """
-  update_all()
-  It fetches and updates all the users in the database.
+  update_all_user_points()
+  It fetches and updates all the users points in the database.
   """
   @spec update_all_user_points() :: {:ok, [map()]} | {:error, map()}
   def update_all_user_points() do
@@ -52,12 +52,11 @@ defmodule Rando.Users do
   end
 
   @spec get_two_highest_users(number()) ::
-          {:ok, [%User{}] | []} | {:error, map()}
+          {:ok, [user_t()] | []} | {:error, map()}
   def get_two_highest_users(min_number) do
     stream =
       from(u in User,
         where: u.points >= ^min_number,
-        order_by: [desc: u.points],
         limit: 2
       )
       |> Repo.stream()

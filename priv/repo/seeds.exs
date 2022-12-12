@@ -14,19 +14,20 @@ db_config = Application.get_env(:rando, Rando.Repo)
 Logger.info("Started seeding the users table with pool_size #{db_config[:pool_size]}")
 start_time = NaiveDateTime.utc_now()
 
-vals = Enum.to_list(0..999_999)
-|> Stream.map(fn _ ->
-  %{inserted_at: {:placeholder, :timestamp}, updated_at: {:placeholder, :timestamp}}
-end)
-|> Stream.chunk_every(batch_size)
-|> Task.async_stream(
-  fn users ->
-    Rando.Repo.insert_all("users", users, placeholders: placeholders)
-  end,
-  max_concurrency: db_config[:pool_size],
-  ordered: false
-)
-|> Enum.to_list()
+vals =
+  Enum.to_list(0..999_999)
+  |> Stream.map(fn _ ->
+    %{inserted_at: {:placeholder, :timestamp}, updated_at: {:placeholder, :timestamp}}
+  end)
+  |> Stream.chunk_every(batch_size)
+  |> Task.async_stream(
+    fn users ->
+      Rando.Repo.insert_all("users", users, placeholders: placeholders)
+    end,
+    max_concurrency: db_config[:pool_size],
+    ordered: false
+  )
+  |> Enum.to_list()
 
 end_time = NaiveDateTime.utc_now()
 diff = Time.diff(end_time, start_time, :microsecond)

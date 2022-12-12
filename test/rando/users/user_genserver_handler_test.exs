@@ -1,4 +1,4 @@
-defmodule RandoWeb.HandlerTest do
+defmodule RandoWeb.UserGenServerHandlerTest do
   use Rando.DataCase, async: false
   import Rando.Factory
 

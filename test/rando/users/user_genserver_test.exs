@@ -1,9 +1,8 @@
 defmodule Rando.UserGenServerTest do
-  use Rando.DataCase
+  use Rando.DataCase, async: false
   import Rando.Factory
 
   alias Rando.UserGenServer
-
 
   describe "start_link/1" do
     setup do
@@ -43,6 +42,9 @@ defmodule Rando.UserGenServerTest do
                timestamp: nil,
                users: ^users
              } = UserGenServer.get_users()
+    end
+
+    test "get_user/0 returns the previous timestamp" do
     end
   end
 end

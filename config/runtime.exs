@@ -51,7 +51,7 @@ if config_env() == :prod do
   port = String.to_integer(System.get_env("PORT") || "4000")
 
   config :rando, RandoWeb.Endpoint,
-    http: [ port: port],
+    http: [port: port],
     secret_key_base: secret_key_base,
     load_from_system_env: true,
     check_origin: false,

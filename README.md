@@ -44,7 +44,7 @@ You may add and override the default configurations of this project by creating 
 The config file should be named in the format, `#{placeholder}.secret.exs` where the placeholder is the name of the enviroment. There is a provided `config/dev.secret.example.exs` to illustrate how to setup the custom config.
 #### 2. With docker-compose
 
-Depending on the platform you are running, you may find the required docker installation instructions here
+Depending on the platform you are running, you may find the required docker installation instructions [https://docs.docker.com/get-docker/](here)
 Once you have docker and docker-compose setup follow the below instruction:
 
 ```

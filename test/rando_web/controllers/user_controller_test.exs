@@ -8,7 +8,7 @@ defmodule RandoWeb.UserControllerTest do
     setup do
       {:ok, pid} = UserGenServer.start_link({0, nil})
       on_exit(fn -> Process.exit(pid, :normal) end)
-      :ok
+      {:ok, pid: pid}
     end
 
     test "index, renders correctly when we do not have data", %{conn: conn} do
@@ -17,10 +17,12 @@ defmodule RandoWeb.UserControllerTest do
       assert %{"timestamp" => nil, "users" => []} = result
     end
 
-    test "index, fetches the correct user data ", %{conn: conn} do
+    test "index, fetches the correct user data, points are also greater than the minimum", %{
+      conn: conn,
+      pid: pid
+    } do
       insert_many(10, :user, points: 25)
-      user1 = insert!(:user, points: 100)
-      user2 = insert!(:user, points: 54)
+      {min_number, _timestamp} = :sys.get_state(pid)
 
       conn = get(conn, Routes.user_path(conn, :index))
       result = json_response(conn, 200)
@@ -28,10 +30,13 @@ defmodule RandoWeb.UserControllerTest do
       assert %{
                "timestamp" => nil,
                "users" => [
-                 %{"id" => user1.id, "points" => user1.points},
-                 %{"id" => user2.id, "points" => user2.points}
+                 %{"id" => _, "points" => point1},
+                 %{"id" => _, "points" => point2}
                ]
-             } == result
+             } = result
+
+      assert point1 >= min_number
+      assert point2 >= min_number
     end
   end
 end
