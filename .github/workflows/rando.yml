@@ -34,8 +34,14 @@ jobs:
         run: |
             mix deps.get
             mix compile
+      - name: Lint
+        run: mix format --check-formatted 
+      - name: Credo
+        run: mix credo
+      - name: Dialyzer 
+        run: mix dialyzer --list-unused-filters --force-check
       - name: Test
-        run: mix test --cover
+        run: mix test
       - name: Cache
         uses: actions/cache@v2
         with:

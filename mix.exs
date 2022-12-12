@@ -8,6 +8,10 @@ defmodule Rando.MixProject do
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: Mix.compilers(),
+      dialyzer: [
+        remove_defaults: [:unknown],
+        flags: [:unmatched_returns, :error_handling, :no_opaque],
+      ],
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()
@@ -43,7 +47,9 @@ defmodule Rando.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
-      {:plug_cowboy, "~> 2.5"}
+      {:plug_cowboy, "~> 2.5"},
+      {:dialyxir, "~> 1.2.0", only: [:dev, :test], runtime: false},
+      {:credo, "~>1.6.7", only: [:dev, :test], runtime: false}
     ]
   end
 
