@@ -10,7 +10,7 @@ defmodule Rando.MixProject do
       compilers: Mix.compilers(),
       dialyzer: [
         remove_defaults: [:unknown],
-        flags: [:unmatched_returns, :error_handling, :no_opaque],
+        flags: [:unmatched_returns, :error_handling, :no_opaque]
       ],
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
