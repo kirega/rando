@@ -24,3 +24,4 @@ rando-*.tar
 
 /config/*.secret.exs
 
+/.elixir_ls

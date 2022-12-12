@@ -1,0 +1,8 @@
+/_build/
+/deps/
+/doc/
+/priv/static/
+/test/
+/tmp/
+/config/*.secrets.exs
+/cover

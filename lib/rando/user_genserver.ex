@@ -56,7 +56,7 @@ defmodule Rando.UserGenServer do
   @impl true
   # The task completed successfully
   def handle_info({ref, :completed_user_update}, state) do
-    Logger.debug("Task: Update all users point complete")
+    Logger.info("Task: Update all users point completeds")
     Process.demonitor(ref, [:flush])
     {:noreply, state}
   end
@@ -64,7 +64,7 @@ defmodule Rando.UserGenServer do
   @impl true
   # The task completed successfully
   def handle_info({ref, :failed_user_update}, state) do
-    Logger.debug("Task: Failed to updates users' points")
+    Logger.info("Task: Failed to update users' points")
     Process.demonitor(ref, [:flush])
     {:noreply, state}
   end

@@ -11,10 +11,10 @@ placeholders = %{timestamp: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:s
 # set the concurrency to match the max allowed pool size
 db_config = Application.get_env(:rando, Rando.Repo)
 
-Logger.debug("Started seeding the users table with pool_size #{db_config[:pool_size]}")
+Logger.info("Started seeding the users table with pool_size #{db_config[:pool_size]}")
 start_time = NaiveDateTime.utc_now()
 
-Enum.to_list(0..999_999)
+vals = Enum.to_list(0..999_999)
 |> Stream.map(fn _ ->
   %{inserted_at: {:placeholder, :timestamp}, updated_at: {:placeholder, :timestamp}}
 end)
@@ -31,7 +31,7 @@ end)
 end_time = NaiveDateTime.utc_now()
 diff = Time.diff(end_time, start_time, :microsecond)
 
-Logger.debug(
+Logger.info(
   "Completed seeding the users table in #{diff} microseconds #{diff / 1_000_000} seconds"
 )
 

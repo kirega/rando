@@ -1,0 +1,27 @@
+version: "3.9"
+services:
+  web:
+    build: .
+    ports:
+      - "8000:4000"
+    depends_on:
+      db:
+        condition: service_healthy 
+    environment:
+      - DATABASE_URL=ecto://postgres:postgres@db/rando?sslmode=disable
+      - SECRET_KEY_BASE=xb9446iJgJtqheH4wK7Hv3L/2F36X0paIO7marOmKjnktE8ZEToCOkEA7TzQbL4x
+      - PORT=4000
+      - DATABASE_HOST=db
+      - MIX_ENV=prod
+      - POSTGRES_USER=postgres
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=rando
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

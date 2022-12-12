@@ -21,7 +21,7 @@ defmodule Rando.Application do
         # {Rando.Worker, arg}
         {Task.Supervisor, name: Rando.TaskSupervisor}
       ] ++
-        if Mix.env() != :test do
+        if System.get_env("MIX_ENV", "") != "test" do
           [{Rando.UserGenServer, {:rand.uniform(100), nil}}]
         else
           []
