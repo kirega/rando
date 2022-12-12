@@ -8,7 +8,10 @@ batch_size = 5_000
 
 placeholders = %{timestamp: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)}
 
-Logger.debug("Started seeding the users table")
+# set the concurrency to match the max allowed pool size
+db_config = Application.get_env(:rando, Rando.Repo)
+
+Logger.debug("Started seeding the users table with pool_size #{db_config[:pool_size]}")
 start_time = NaiveDateTime.utc_now()
 
 Enum.to_list(0..999_999)
@@ -20,7 +23,7 @@ end)
   fn users ->
     Rando.Repo.insert_all("users", users, placeholders: placeholders)
   end,
-  max_concurrency: 10,
+  max_concurrency: db_config[:pool_size],
   ordered: false
 )
 |> Enum.to_list()
@@ -36,7 +39,7 @@ Logger.debug(
 
 # below are estimate time completions of the seeding, they only serve as a benchmark to guide
 # the reasoning behind the batch_size as I was unable to fully figure out why the speeds
-# were better for a smaller batch sizes. So through trial and error I arrived on 5000, below
+# were better for smaller batch sizes. So through trial and error I arrived on 5000, below
 # is my empirical summary.
 #
 # batch_size = 10,000

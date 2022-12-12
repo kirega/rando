@@ -36,16 +36,20 @@ defmodule Rando.UserGenServer do
   end
 
   @impl true
-  def handle_info(:cron, {_min_number, timestamp}) do
-    GenServer.cast(__MODULE__, :update_users)
-
-    Task.Supervisor.async_nolink(Rando.TaskSupervisor, fn ->
+  def handle_cast(:update_users, state) do
+    Task.Supervisor.async(Rando.TaskSupervisor, fn ->
       case Users.update_all_user_points() do
         {:ok, _} -> :completed_user_update
         {:error, _} -> :failed_user_update
       end
     end)
 
+    {:noreply, state}
+  end
+
+  @impl true
+  def handle_info(:cron, {_min_number, timestamp}) do
+    GenServer.cast(__MODULE__, :update_users)
     {:noreply, {:rand.uniform(100), timestamp}}
   end
 
@@ -53,9 +57,7 @@ defmodule Rando.UserGenServer do
   # The task completed successfully
   def handle_info({ref, :completed_user_update}, state) do
     Logger.debug("Task: Update all users point complete")
-    # We don't care about the DOWN message now, so let's demonitor and flush it
     Process.demonitor(ref, [:flush])
-    # Do something with the result and then return
     {:noreply, state}
   end
 
@@ -63,9 +65,7 @@ defmodule Rando.UserGenServer do
   # The task completed successfully
   def handle_info({ref, :failed_user_update}, state) do
     Logger.debug("Task: Failed to updates users' points")
-    # We don't care about the DOWN message now, so let's demonitor and flush it
     Process.demonitor(ref, [:flush])
-    # Do something with the result and then return
     {:noreply, state}
   end
 

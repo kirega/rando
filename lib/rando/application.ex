@@ -7,20 +7,25 @@ defmodule Rando.Application do
 
   @impl true
   def start(_type, _args) do
-    children = [
-      # Start the Ecto repository
-      Rando.Repo,
-      # Start the Telemetry supervisor
-      RandoWeb.Telemetry,
-      # Start the PubSub system
-      {Phoenix.PubSub, name: Rando.PubSub},
-      # Start the Endpoint (http/https)
-      RandoWeb.Endpoint,
-      # Start a worker by calling: Rando.Worker.start_link(arg)
-      # {Rando.Worker, arg}
-      {Task.Supervisor, name: Rando.TaskSupervisor},
-      {Rando.UserGenServer, {:rand.uniform(100), nil}}
-    ]
+    children =
+      [
+        # Start the Ecto repository
+        Rando.Repo,
+        # Start the Telemetry supervisor
+        RandoWeb.Telemetry,
+        # Start the PubSub system
+        {Phoenix.PubSub, name: Rando.PubSub},
+        # Start the Endpoint (http/https)
+        RandoWeb.Endpoint,
+        # Start a worker by calling: Rando.Worker.start_link(arg)
+        # {Rando.Worker, arg}
+        {Task.Supervisor, name: Rando.TaskSupervisor}
+      ] ++
+        if Mix.env() != :test do
+          [{Rando.UserGenServer, {:rand.uniform(100), nil}}]
+        else
+          []
+        end
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

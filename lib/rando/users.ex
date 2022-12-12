@@ -14,31 +14,22 @@ defmodule Rando.Users do
   update_all()
   It fetches and updates all the users in the database.
   """
+  @spec update_all_user_points() :: {:ok, [map()]} | {:error, map()}
   def update_all_user_points() do
-    Logger.debug("Started updating the users table")
-    start_time = NaiveDateTime.utc_now()
-    placeholders = %{timestamp: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)}
-    stream = Repo.stream(from(u in User))
+    placeholders = %{
+      timestamp: DateTime.utc_now() |> DateTime.truncate(:second) |> DateTime.to_naive()
+    }
 
     Repo.transaction(fn ->
-      stream
+      Repo.stream(from(u in User))
       |> Stream.map(&build_user(&1))
       |> Stream.chunk_every(@chunk)
       |> Task.async_stream(&insert_user_chunk(&1, placeholders),
-        max_concurrency: 10,
+        max_concurrency: get_max_concurrency(),
         ordered: false
       )
       |> Enum.to_list()
     end)
-
-    end_time = NaiveDateTime.utc_now()
-    diff = Time.diff(end_time, start_time, :microsecond)
-
-    Logger.debug(
-      "Completed updating the users table in #{diff} microseconds #{diff / 1_000_000} seconds"
-    )
-
-    # runs in ~4s
   end
 
   defp build_user(user) do
@@ -60,27 +51,24 @@ defmodule Rando.Users do
     )
   end
 
+  @spec get_two_highest_users(number()) ::
+          {:ok, [%User{}] | []} | {:error, map()}
   def get_two_highest_users(min_number) do
-    stream = from(u in User,
-      where: u.points >= ^min_number,
-      limit: 2,
-      select: %{id: u.id, points: u.points}
-    )
-    |> Repo.stream()
-    Repo.transaction(fn ->  
+    stream =
+      from(u in User,
+        where: u.points >= ^min_number,
+        order_by: [desc: u.points],
+        limit: 2
+      )
+      |> Repo.stream()
+
+    Repo.transaction(fn ->
       stream |> Enum.to_list()
     end)
-    |> case do 
-      {:ok, users} -> users
-      {:error, error} -> :error
-    end
+  end
+
+  defp get_max_concurrency do
+    db_config = Application.get_env(:rando, Rando.Repo)
+    db_config[:pool_size]
   end
 end
-
-# batch = 5000
-# max_concurrency = 5
-# Completed updating the users table in 3266225 microseconds 3.266225 seconds
-
-# batch = 5000
-# max_concurrency = 5
-# Completed updating the users table in 3266225 microseconds 3.266225 seconds
