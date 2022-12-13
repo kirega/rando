@@ -3,7 +3,6 @@ defmodule Rando.UserGenServer do
   require Logger
   alias Rando.Users
 
-  # TODO make the state a struct
   # defstruct [:min_number, :timestamp]
 
   def start_link(default) do
