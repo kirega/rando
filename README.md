@@ -1,5 +1,4 @@
 # Rando :game_die:
-=======
 
 Welcome to Rando, an Elixir Phoenix service to provide you with randomized users.
 
@@ -8,6 +7,7 @@ Welcome to Rando, an Elixir Phoenix service to provide you with randomized users
 This service only implements a single public endpoint, that returns a max of 2 users with more than a random number of points.
 
 ---
+
 ## How to start the project
 
 ## Prerequisites
@@ -18,8 +18,8 @@ The prerequisites to run this project will depend on the mode you choose:
 
 Before you can run this project, you will need to have the following:
 
-1. `postgres` - our database you may find instructions on how to set it up [https://www.postgresql.org/](here)
-2. `asdf` - the flexible runtime version manager, find it [https://asdf-vm.com/](here). This will ensure that everyone runs the same version of erlang and elixir.
+1. `postgres` - our database you may find instructions on how to set it up [here](https://www.postgresql.org/)
+2. `asdf` - the flexible runtime version manager, find it [here](https://asdf-vm.com/). This will ensure that everyone runs the same version of erlang and elixir.
 3. `git` - package manager
 
 To start the Rando server:
@@ -38,13 +38,9 @@ To start the Rando server:
 - Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 - For testing, run `MIX_ENV=test mix test`
 
-##### Configuration
-You may add and override the default configurations of this project by creating your custom configuration file within the `config` folder.
+### 2. With docker-compose
 
-The config file should be named in the format, `#{placeholder}.secret.exs` where the placeholder is the name of the enviroment. There is a provided `config/dev.secret.example.exs` to illustrate how to setup the custom config.
-#### 2. With docker-compose
-
-Depending on the platform you are running, you may find the required docker installation instructions [https://docs.docker.com/get-docker/](here)
+Depending on the platform you are running, you may find the required docker installation instructions [here](https://docs.docker.com/get-docker/)
 Once you have docker and docker-compose setup follow the below instruction:
 
 ```
@@ -53,7 +49,13 @@ cd rando
 docker-compose up
 ```
 
-## Available Endpoints 
+## Configuration
+
+You may add and override the default configurations of this project by creating your custom configuration file within the `config` folder.
+
+The config file should be named in the format, `#{placeholder}.secret.exs` where the placeholder is the name of the enviroment. There is a provided `config/dev.secret.example.exs` to illustrate how to setup the custom config.
+
+## Available Endpoints
 
 One public endpoint as root `/`
 
