@@ -48,6 +48,12 @@ git clone git@github.com:kirega/rando.git
 cd rando
 docker-compose up
 ```
+To seed the database through this method will require an extra step. After running the docker-compose service, you can then `docker exec` into the container and run the seeding command
+
+```
+docker exec -it rando-web-1 /bin/bash
+PORT=4002 ./bin/rando eval "Rando.Release.seed"
+```
 
 ## Configuration
 
