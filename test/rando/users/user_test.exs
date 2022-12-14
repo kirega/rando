@@ -9,7 +9,11 @@ defmodule Rando.UsersTest do
       Ecto.Adapters.SQL.Sandbox.checkout(Repo, sandbox: true)
       Ecto.Adapters.SQL.Sandbox.mode(Rando.Repo, :auto)
 
-      timestamp = Users.timestamp()
+      timestamp =
+        DateTime.utc_now()
+        |> DateTime.add(-60, :second)
+        |> DateTime.truncate(:second)
+        |> DateTime.to_naive()
 
       insert_many(10, :user, %{inserted_at: timestamp, updated_at: timestamp})
 

@@ -6,7 +6,7 @@
 require Logger
 batch_size = 5_000
 
-placeholders = %{timestamp: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)}
+placeholders = %{timestamp: Rando.Users.naive_timestamp()}
 
 # set the concurrency to match the max allowed pool size
 db_config = Application.get_env(:rando, Rando.Repo)
@@ -14,7 +14,7 @@ db_config = Application.get_env(:rando, Rando.Repo)
 Logger.info("Started seeding the users table with pool_size #{db_config[:pool_size]}")
 start_time = NaiveDateTime.utc_now()
 
-vals =
+_vals =
   Enum.to_list(0..999_999)
   |> Stream.map(fn _ ->
     %{inserted_at: {:placeholder, :timestamp}, updated_at: {:placeholder, :timestamp}}

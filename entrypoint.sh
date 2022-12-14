@@ -13,7 +13,5 @@ bin="/app/bin/rando"
 # start the elixir application
 echo 'connected to db'
 
-eval "$bin eval \"Rando.Release.seed\""
-
 echo "starting the server"
 exec "$bin" "start"

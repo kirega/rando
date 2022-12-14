@@ -17,7 +17,7 @@ defmodule Rando.Users do
   @spec update_all_user_points() :: {:ok, [map()]} | {:error, map()}
   def update_all_user_points() do
     placeholders = %{
-      timestamp: timestamp()
+      timestamp: naive_timestamp()
     }
 
     Repo.transaction(fn ->
@@ -51,19 +51,14 @@ defmodule Rando.Users do
     )
   end
 
-  @spec get_two_highest_users(number()) ::
-          {:ok, [user_t()] | []} | {:error, map()}
+  @spec get_two_highest_users(number()) :: [user_t()] | []
   def get_two_highest_users(min_number) do
-    stream =
-      from(u in User,
-        where: u.points >= ^min_number,
-        limit: 2
-      )
-      |> Repo.stream()
-
-    Repo.transaction(fn ->
-      stream |> Enum.to_list()
-    end)
+    from(u in User,
+      where: u.points >= ^min_number,
+      limit: 2,
+      order_by: fragment("RANDOM()")
+    )
+    |> Repo.all()
   end
 
   defp get_max_concurrency do
@@ -80,5 +75,11 @@ defmodule Rando.Users do
     |> DateTime.truncate(:second)
     |> DateTime.to_naive()
     |> NaiveDateTime.to_string()
+  end
+
+  def naive_timestamp() do
+    DateTime.utc_now()
+    |> DateTime.truncate(:second)
+    |> DateTime.to_naive()
   end
 end

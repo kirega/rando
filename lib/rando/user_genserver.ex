@@ -25,17 +25,11 @@ defmodule Rando.UserGenServer do
   def handle_call(:get_users, _from, %UserGenServer{min_number: min_number} = state) do
     timestamp = Users.timestamp()
 
-    case Users.get_two_highest_users(min_number) do
-      {:ok, user} ->
-        {:reply,
-         %{
-           users: user,
-           timestamp: state.timestamp
-         }, %{state | timestamp: timestamp}}
-
-      _ ->
-        {:reply, %{}, {min_number, %{state | timestamp: timestamp}}}
-    end
+    {:reply,
+     %{
+       users: Users.get_two_highest_users(min_number),
+       timestamp: state.timestamp
+     }, %{state | timestamp: timestamp}}
   end
 
   @impl true
