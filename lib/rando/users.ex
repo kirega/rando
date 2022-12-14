@@ -17,7 +17,7 @@ defmodule Rando.Users do
   @spec update_all_user_points() :: {:ok, [map()]} | {:error, map()}
   def update_all_user_points() do
     placeholders = %{
-      timestamp: DateTime.utc_now() |> DateTime.truncate(:second) |> DateTime.to_naive()
+      timestamp: timestamp()
     }
 
     Repo.transaction(fn ->
@@ -35,7 +35,7 @@ defmodule Rando.Users do
   defp build_user(user) do
     %{
       id: user.id,
-      points: :rand.uniform(100),
+      points: random_points(),
       inserted_at: {:placeholder, :timestamp},
       updated_at: {:placeholder, :timestamp}
     }
@@ -67,7 +67,18 @@ defmodule Rando.Users do
   end
 
   defp get_max_concurrency do
-    db_config = Application.get_env(:rando, Rando.Repo)
-    db_config[:pool_size]
+    Application.get_env(:rando, Rando.Repo) |> Keyword.get(:pool_size)
+  end
+
+  defp random_points() do
+    Application.get_env(:rando, :max_range)
+    |> :rand.uniform()
+  end
+
+  def timestamp() do
+    DateTime.utc_now()
+    |> DateTime.truncate(:second)
+    |> DateTime.to_naive()
+    |> NaiveDateTime.to_string()
   end
 end

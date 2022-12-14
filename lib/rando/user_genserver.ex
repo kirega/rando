@@ -1,9 +1,11 @@
 defmodule Rando.UserGenServer do
   use GenServer
   require Logger
+  alias Rando.UserGenServer
   alias Rando.Users
 
-  # defstruct [:min_number, :timestamp]
+  defstruct min_number: :rand.uniform(Application.compile_env(:rando, :max_range)), timestamp: nil
+  @type t :: %__MODULE__{min_number: integer(), timestamp: nil | String.t()}
 
   def start_link(default) do
     GenServer.start_link(__MODULE__, default, name: Rando.UserGenServer)
@@ -20,17 +22,19 @@ defmodule Rando.UserGenServer do
   end
 
   @impl true
-  def handle_call(:get_users, _from, {min_number, timestamp}) do
+  def handle_call(:get_users, _from, %UserGenServer{min_number: min_number} = state) do
+    timestamp = Users.timestamp()
+
     case Users.get_two_highest_users(min_number) do
       {:ok, user} ->
         {:reply,
          %{
            users: user,
-           timestamp: timestamp
-         }, {min_number, NaiveDateTime.utc_now()}}
+           timestamp: state.timestamp
+         }, %{state | timestamp: timestamp}}
 
       _ ->
-        {:reply, %{}, {min_number, NaiveDateTime.utc_now()}}
+        {:reply, %{}, {min_number, %{state | timestamp: timestamp}}}
     end
   end
 
@@ -48,13 +52,12 @@ defmodule Rando.UserGenServer do
   end
 
   @impl true
-  def handle_info(:cron, {_min_number, timestamp}) do
+  def handle_info(:cron, %UserGenServer{} = state) do
     GenServer.cast(__MODULE__, :update_users)
-    {:noreply, {:rand.uniform(100), timestamp}}
+    {:noreply, %{state | min_number: random_points()}}
   end
 
   @impl true
-  # The task completed successfully
   def handle_info({ref, :completed_user_update}, state) do
     Logger.info("Task: Update all users point completeds")
     Process.demonitor(ref, [:flush])
@@ -62,7 +65,6 @@ defmodule Rando.UserGenServer do
   end
 
   @impl true
-  # The task completed successfully
   def handle_info({ref, :failed_user_update}, state) do
     Logger.info("Task: Failed to update users' points")
     Process.demonitor(ref, [:flush])
@@ -71,5 +73,10 @@ defmodule Rando.UserGenServer do
 
   defp schedule do
     Process.send_after(self(), :cron, :timer.seconds(60))
+  end
+
+  defp random_points() do
+    range = Application.get_env(:rando, :max_range)
+    :rand.uniform(range)
   end
 end

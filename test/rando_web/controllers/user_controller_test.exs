@@ -6,7 +6,7 @@ defmodule RandoWeb.UserControllerTest do
 
   describe "get users" do
     setup do
-      {:ok, pid} = UserGenServer.start_link({0, nil})
+      {:ok, pid} = UserGenServer.start_link(%UserGenServer{min_number: 0, timestamp: nil})
       on_exit(fn -> Process.exit(pid, :normal) end)
       {:ok, pid: pid}
     end
@@ -22,7 +22,7 @@ defmodule RandoWeb.UserControllerTest do
       pid: pid
     } do
       insert_many(10, :user, points: 25)
-      {min_number, _timestamp} = :sys.get_state(pid)
+      %UserGenServer{min_number: min_number} = :sys.get_state(pid)
 
       conn = get(conn, Routes.user_path(conn, :index))
       result = json_response(conn, 200)
