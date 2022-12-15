@@ -1,6 +1,7 @@
 # Rando :game_die:
 
 Welcome to Rando, an Elixir Phoenix service to provide you with randomized users.
+A live demo of this service lives https://rando.fly.dev/ 
 
 ## About
 
