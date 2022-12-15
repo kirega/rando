@@ -38,6 +38,8 @@ To start the Rando server:
 - Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 - For testing, run `MIX_ENV=test mix test`
 
+After testing the service, you can always reset the database to start all over again with  `mix ecto.reset`
+
 ### 2. With docker-compose
 
 Depending on the platform you are running, you may find the required docker installation instructions [here](https://docs.docker.com/get-docker/)
